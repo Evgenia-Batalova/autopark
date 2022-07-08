@@ -1,7 +1,9 @@
 package com.batalova.autopark.context;
 
+import com.batalova.autopark.controller.AutoparkController;
 import com.batalova.autopark.jdbc.AutoparkDao;
 import com.batalova.autopark.jdbc.AutoparkDaoImpl;
+import com.batalova.autopark.services.AutoparkService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +15,13 @@ import javax.sql.DataSource;
 @Configuration
 public class AutoparkContext {
 
-
     @Bean
     public DataSource dataSourceProperties(
-            @Value("${jdbc.url}")
+            @Value("${autopark.jdbc.url}")
             String url,
-            @Value("${jdbc.username}")
+            @Value("${autopark.jdbc.username}")
             String username,
-            @Value("${jdbc.password}")
+            @Value("${autopark.jdbc.password}")
             String password
     )
     {
@@ -36,6 +37,11 @@ public class AutoparkContext {
     @Bean
     public AutoparkDao autoparkJdbc(JdbcTemplate jdbcTemplate) {
         return new AutoparkDaoImpl(jdbcTemplate);
+    }
+
+    @Bean
+    public AutoparkService autoparkService(AutoparkDao autoparkDao) {
+        return new AutoparkService(autoparkDao);
     }
 
 }
