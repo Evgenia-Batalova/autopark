@@ -5,6 +5,7 @@ import com.batalova.autopark.dto.JournalDto;
 import com.batalova.autopark.dto.PersonnelDto;
 import com.batalova.autopark.dto.RouteDto;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -32,6 +33,14 @@ public interface AutoparkDao {
 
     List<AutoDto> findAutoByNumber(String number);
 
+    List<PersonnelDto> findPersonnelByFirstName(String firstName);
 
+    List<PersonnelDto> findPersonnelByLastName(String lastName);
+
+    List<PersonnelDto> findPersonnelByFatherName(String fatherName);
+
+    List<JournalDto> findJournalByTimeIn(Instant timeIn);
+
+    List<JournalDto> findJournalByTimeOut(Instant timeOut);
 
 }

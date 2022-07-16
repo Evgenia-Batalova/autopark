@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
+import java.time.Instant;
 import java.util.List;
 
 public class AutoparkDaoImpl implements AutoparkDao {
@@ -153,12 +154,22 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<AutoDto> findAutoByColor(String color) {
-        return null;
+        String request = "SELECT * FROM auto WHERE color = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(AutoDto.class),
+                color);
     }
 
     @Override
-    public List<AutoDto> findAutoByMark(String color) {
-        return null;
+    public List<AutoDto> findAutoByMark(String mark) {
+        String request = "SELECT * FROM auto WHERE mark = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(AutoDto.class),
+                mark);
     }
 
     @Override
@@ -170,6 +181,56 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 DataClassRowMapper.newInstance(AutoDto.class),
                 number);
 
+    }
+
+    @Override
+    public List<PersonnelDto> findPersonnelByFirstName(String firstName) {
+        String request = "SELECT * FROM auto_personnel WHERE first_name = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                firstName);
+    }
+
+    @Override
+    public List<PersonnelDto> findPersonnelByLastName(String lastName) {
+        String request = "SELECT * FROM auto_personnel WHERE last_name = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                lastName);
+    }
+
+    @Override
+    public List<PersonnelDto> findPersonnelByFatherName(String fatherName) {
+        String request = "SELECT * FROM auto_personnel WHERE father_name = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                fatherName);
+    }
+
+    @Override
+    public List<JournalDto> findJournalByTimeIn(Instant timeIn) {
+        String request = "SELECT * FROM journal WHERE time_in = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(JournalDto.class),
+                timeIn);
+    }
+
+    @Override
+    public List<JournalDto> findJournalByTimeOut(Instant timeOut) {
+        String request = "SELECT * FROM journal WHERE time_out = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(JournalDto.class),
+                timeOut);
     }
 
 }
