@@ -37,10 +37,6 @@ public class AutoparkService {
         return autoparkDao.addRoute(route);
     }
 
-    public int addJournal(JournalDto journal){
-        return autoparkDao.addJournal(journal);
-    }
-
     public List<AutoDto> deleteAuto(int autoId){
         return autoparkDao.deleteAuto((autoId));
     }
@@ -99,5 +95,25 @@ public class AutoparkService {
 
     public void finishRoute(int id, Instant timeOut){
         autoparkDao.finishRoute(id, timeOut);
+    }
+
+    public List<RouteDto> findRouteByName(String routeName) {return autoparkDao.findRouteByName(routeName);}
+
+    public int startRouteByAutoNumberAndRouteName(String autoNum, String routeName) {
+        List<AutoDto> autoDtoList = autoparkDao.findAutoByNumber(autoNum);
+        int autoId;
+        int routeId;
+        if (autoDtoList.size() >= 1) {
+            autoId = autoDtoList.get(0).getId().get();
+        } else {
+            throw new RuntimeException("Auto with number " + autoNum + " is absent");
+        }
+        List<RouteDto> routeDtoList = autoparkDao.findRouteByName(routeName);
+        if (routeDtoList.size() >= 1) {
+            routeId = routeDtoList.get(0).getId().get();
+        } else {
+            throw new RuntimeException("Route with name " + routeName + " is absent");
+        }
+        return autoparkDao.startRoute(new JournalDto(autoId, routeId, Instant.now()));
     }
 }

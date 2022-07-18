@@ -17,8 +17,6 @@ public interface AutoparkDao {
 
     int addRoute(RouteDto routeDto);
 
-    int addJournal(JournalDto journalDto);
-
     List<AutoDto> deleteAuto(int autoId);
 
     List<PersonnelDto> deletePersonnel(int personnelId);
@@ -47,6 +45,8 @@ public interface AutoparkDao {
     int startRoute(JournalDto journalDto);
 
     void finishRoute(int id, Instant timeOut);
+
+    List<RouteDto> findRouteByName(String routeName);
 
 
 }

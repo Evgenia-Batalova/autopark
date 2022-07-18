@@ -23,6 +23,10 @@ public class JournalDto {
         this.timeOut = timeOut;
     }
 
+    public JournalDto(Integer autoId, Integer routeId, Instant timeIn) {
+        this(Optional.empty(), autoId, routeId, timeIn, Optional.empty());
+    }
+
     public Optional<Integer> getId() {
         return id;
     }

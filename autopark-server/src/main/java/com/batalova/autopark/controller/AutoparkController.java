@@ -73,24 +73,5 @@ public class AutoparkController {
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/add-journal")
-    public ResponseEntity<Integer> addJournal(
-            @RequestParam(name = "auto-id")
-            int autoId,
-            @RequestParam(name = "route-id")
-            int routeId,
-            @RequestParam(name = "time-in")
-            Instant timeIn,
-            @RequestParam(name = "time-out")
-            Optional<Instant> timeOut
-    )
-    {
-        JournalDto newJournal = new JournalDto(Optional.empty(), autoId, routeId, timeIn, timeOut);
-
-        int id = autoparkService.addJournal(newJournal);
-
-        return new ResponseEntity<>(id, HttpStatus.OK);
-    }
-
 
 }

@@ -90,8 +90,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
         return keyHolder.getKey().intValue();
     }
 
-    @Override
-    public int addJournal(JournalDto journalDto) {
+    private int addJournal(JournalDto journalDto) {
         String request = "INSERT INTO journal (autoId, routeId, timeIn, timeOut) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -125,6 +124,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<PersonnelDto> deletePersonnel(int personnelId) {
+
         String request = "DELETE FROM personnel WHERE id = ?";
 
         return jdbcTemplate.query(
@@ -255,11 +255,6 @@ public class AutoparkDaoImpl implements AutoparkDao {
     }
 
     @Override
-    public int startRouteWithAutoNumber(JournalDto journalDto) {
-
-    }
-
-    @Override
     public void finishRoute(int id, Instant timeOut) {
         if (!isRouteFinished(id)) {
             String request = "UPDATE journal SET time_out = ? WHERE id = ?";
@@ -267,6 +262,16 @@ public class AutoparkDaoImpl implements AutoparkDao {
         } else {
             throw new RuntimeException("Route with id: " + id + " is already exists!");
         }
+    }
+
+    @Override
+    public List<RouteDto> findRouteByName(String routeName) {
+        String request = "SELECT * FROM routes WHERE name = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(RouteDto.class),
+                routeName);
     }
 
 }
