@@ -39,8 +39,14 @@ public interface AutoparkDao {
 
     List<PersonnelDto> findPersonnelByFatherName(String fatherName);
 
-    List<JournalDto> findJournalByTimeIn(Instant timeIn);
+    List<JournalDto> findUnfinishedRouteByAuto(String autoNumber);
 
-    List<JournalDto> findJournalByTimeOut(Instant timeOut);
+    List<JournalDto> findUnfinishedRouteByAutoId(int autoId);
+
+    Boolean isRouteFinished(int routeId);
+    int startRoute(JournalDto journalDto);
+
+    void finishRoute(int id, Instant timeOut);
+
 
 }

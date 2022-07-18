@@ -13,9 +13,9 @@ public class JournalDto {
 
     private final Instant timeIn;
 
-    private final Instant timeOut;
+    private final Optional<Instant> timeOut;
 
-    private JournalDto(Optional<Integer> id, Integer autoId, Integer routeId, Instant timeIn, Instant timeOut) {
+    public JournalDto(Optional<Integer> id, Integer autoId, Integer routeId, Instant timeIn, Optional<Instant> timeOut) {
         this.id = id;
         this.autoId = autoId;
         this.routeId = routeId;
@@ -39,7 +39,7 @@ public class JournalDto {
         return timeIn;
     }
 
-    public Instant getTimeOut() {
+    public Optional<Instant> getTimeOut() {
         return timeOut;
     }
 }

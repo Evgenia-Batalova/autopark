@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 
@@ -214,23 +215,58 @@ public class AutoparkDaoImpl implements AutoparkDao {
     }
 
     @Override
-    public List<JournalDto> findJournalByTimeIn(Instant timeIn) {
-        String request = "SELECT * FROM journal WHERE time_in = ?";
+    public List<JournalDto> findUnfinishedRouteByAuto(String autoNumber) {
+        String request = "SELECT journal.* FROM auto JOIN journal ON auto.id = journal.auto_id" +
+                "WHERE auto.number = ? AND journal.time_out IS NULL";
 
         return jdbcTemplate.query(
                 request,
                 DataClassRowMapper.newInstance(JournalDto.class),
-                timeIn);
+                autoNumber);
     }
 
     @Override
-    public List<JournalDto> findJournalByTimeOut(Instant timeOut) {
-        String request = "SELECT * FROM journal WHERE time_out = ?";
+    public List<JournalDto> findUnfinishedRouteByAutoId(int autoId) {
+        String request = "SELECT * FROM journal WHERE auto_id = ? AND time_out IS NULL";
 
         return jdbcTemplate.query(
                 request,
                 DataClassRowMapper.newInstance(JournalDto.class),
-                timeOut);
+                autoId);
+    }
+
+    @Override
+    public Boolean isRouteFinished(int routeId) {
+        String request = "SELECT * FROM journal WHERE route_id = ? AND time_out IS NULL";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(JournalDto.class),
+                routeId).size() < 1;
+    }
+
+    @Override
+    public int startRoute(JournalDto journalDto) {
+        if (findUnfinishedRouteByAutoId(journalDto.getAutoId()).size() < 1) {
+            return addJournal(journalDto);
+        } else {
+            throw new RuntimeException("Auto with id: " + journalDto.getAutoId() + " is already on the route!");
+        }
+    }
+
+    @Override
+    public int startRouteWithAutoNumber(JournalDto journalDto) {
+
+    }
+
+    @Override
+    public void finishRoute(int id, Instant timeOut) {
+        if (!isRouteFinished(id)) {
+            String request = "UPDATE journal SET time_out = ? WHERE id = ?";
+            jdbcTemplate.update(request, timeOut, id);
+        } else {
+            throw new RuntimeException("Route with id: " + id + " is already exists!");
+        }
     }
 
 }
