@@ -7,6 +7,7 @@ import com.batalova.autopark.dto.RouteDto;
 import com.batalova.autopark.jdbc.AutoparkDao;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,75 +31,79 @@ public class AutoparkService {
         }
 
     }
-    public int addPersonnel(PersonnelDto personnel){
+
+    public int addPersonnel(PersonnelDto personnel) {
         return autoparkDao.addPersonnel(personnel);
     }
 
-    public int addRoute(RouteDto route){
+    public int addRoute(RouteDto route) {
         return autoparkDao.addRoute(route);
     }
 
-    public List<AutoDto> deleteAuto(int autoId){
+    public List<AutoDto> deleteAuto(int autoId) {
         return autoparkDao.deleteAuto((autoId));
     }
 
-    public List<PersonnelDto> deletePersonnel(int personnelId){
+    public List<PersonnelDto> deletePersonnel(int personnelId) {
         return autoparkDao.deletePersonnel(personnelId);
     }
 
-    public List<RouteDto> deleteRoute(int routeId){
+    public List<RouteDto> deleteRoute(int routeId) {
         return autoparkDao.deleteRoute(routeId);
     }
 
-    public List<JournalDto> deleteJournal(int journalId){
+    public List<JournalDto> deleteJournal(int journalId) {
         return autoparkDao.deleteJournal(journalId);
     }
 
-    public List<AutoDto> findAutoByColor(String color){
+    public List<AutoDto> findAutoByColor(String color) {
         return autoparkDao.findAutoByColor(color);
     }
 
-    public List<AutoDto> findAutoByMark(String mark){
+    public List<AutoDto> findAutoByMark(String mark) {
         return autoparkDao.findAutoByMark(mark);
     }
 
-    public List<AutoDto> findAutoByNumber(String number){
+    public List<AutoDto> findAutoByNumber(String number) {
         return autoparkDao.findAutoByNumber(number);
     }
 
-    public List<PersonnelDto> findPersonnelByFirstName(String firstName){
+    public List<PersonnelDto> findPersonnelByFirstName(String firstName) {
         return autoparkDao.findPersonnelByFirstName(firstName);
     }
 
-    public List<PersonnelDto> findPersonnelByLastName(String lastName){
+    public List<PersonnelDto> findPersonnelByLastName(String lastName) {
         return autoparkDao.findPersonnelByLastName(lastName);
     }
 
-    public List<PersonnelDto> findPersonnelByFatherName(String fatherName){
+    public List<PersonnelDto> findPersonnelByFatherName(String fatherName) {
         return autoparkDao.findPersonnelByFatherName(fatherName);
     }
 
-    public List<JournalDto> findUnfinishedRouteByAuto(String autoNumber){
+    public List<JournalDto> findUnfinishedRouteByAuto(String autoNumber) {
         return autoparkDao.findUnfinishedRouteByAuto(autoNumber);
     }
 
-    public List<JournalDto> findUnfinishedRouteByAutoId(int autoId){
+    public List<JournalDto> findUnfinishedRouteByAutoId(int autoId) {
         return autoparkDao.findUnfinishedRouteByAutoId(autoId);
     }
 
-    public Boolean isRouteFinished(int routeId){
+    public Boolean isRouteFinished(int routeId) {
         return autoparkDao.isRouteFinished(routeId);
     }
 
-    public int startRoute(JournalDto journalDto){
+    public int startRoute(JournalDto journalDto) {
         return autoparkDao.startRoute(journalDto);
     }
 
-    public void finishRoute(int id, Instant timeOut){
+    private void finishRoute(int id) {
+        Instant timeOut = Instant.now();
         autoparkDao.finishRoute(id, timeOut);
     }
 
-    public List<RouteDto> findRouteByName(String routeName) {return autoparkDao.findRouteByName(routeName);}
+    public List<RouteDto> findRouteByName(String routeName) {
+        return autoparkDao.findRouteByName(routeName);
+    }
 
     public int startRouteByAutoNumberAndRouteName(String autoNum, String routeName) {
         List<AutoDto> autoDtoList = autoparkDao.findAutoByNumber(autoNum);
@@ -118,8 +123,7 @@ public class AutoparkService {
         return autoparkDao.startRoute(new JournalDto(autoId, routeId, Instant.now()));
     }
 
-    public ResponseEntity<Void> finishRouteByAutoNumber(String autoNum){
-        List<JournalDto> autoNumList = autoparkDao.findUnfinishedRouteByAuto(autoNum);
+    public ResponseEntity<Void> finishRouteByAutoNumber(String autoNum) {
         List<AutoDto> autoDtoList = autoparkDao.findAutoByNumber(autoNum);
         int autoId;
         int routeId;
@@ -131,12 +135,14 @@ public class AutoparkService {
         List<JournalDto> journalDtoList = autoparkDao.findUnfinishedRouteByAutoId(autoId);
         if (journalDtoList.size() >= 1) {
             routeId = journalDtoList.get(0).getRouteId();
-        }
-        if (autoNumList.size() >= 1) {
             finishRoute(routeId);
         } else {
-            throw new RuntimeException("Route " + routeId + " already complete");
+            throw new RuntimeException("There are no active routes for auto with number " + autoNum);
         }
-        return ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public List<AutoDto> updateAutoColor(String color, String number) {
+        return autoparkDao.updateAutoColor(color, number);
     }
 }

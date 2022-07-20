@@ -48,5 +48,7 @@ public interface AutoparkDao {
 
     List<RouteDto> findRouteByName(String routeName);
 
+    List<AutoDto> updateAutoColor(String color, String number);
+
 
 }

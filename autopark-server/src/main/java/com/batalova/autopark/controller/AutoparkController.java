@@ -232,7 +232,7 @@ public class AutoparkController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "start-route-by-auto-number-and-route-name")
+    @GetMapping(value = "/start-route-by-auto-number-and-route-name")
     public ResponseEntity<Integer> startRouteByAutoNumberAndRouteName(
             @RequestParam(name = "autoNum")
             String autoNum,
@@ -243,6 +243,17 @@ public class AutoparkController {
         int startByAutoNumberAndRouteName = autoparkService.startRouteByAutoNumberAndRouteName(autoNum, routeName);
 
         return new ResponseEntity<>(startByAutoNumberAndRouteName, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update-auto-color")
+    public ResponseEntity<List<AutoDto>> updateAutoColor(
+            @RequestParam(name = "color")
+            String color,
+            @RequestParam(name = "number")
+            String number
+    )
+    {
+        return new ResponseEntity<>(autoparkService.updateAutoColor(color, number), HttpStatus.OK);
     }
 
 }

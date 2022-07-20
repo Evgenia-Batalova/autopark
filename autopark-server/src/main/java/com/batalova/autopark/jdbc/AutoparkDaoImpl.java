@@ -274,4 +274,15 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 routeName);
     }
 
+    @Override
+    public List<AutoDto> updateAutoColor(String color, String number) {
+        String request = "UPDATE auto SET color =? WHERE number = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(AutoDto.class),
+                color,
+                number);
+    }
+
 }
