@@ -256,4 +256,15 @@ public class AutoparkController {
         return new ResponseEntity<>(autoparkService.updateAutoColor(color, number), HttpStatus.OK);
     }
 
+    @PostMapping(value = "/update-auto-number")
+    public ResponseEntity<List<AutoDto>> updateAutoNumber(
+            @RequestParam(name = "oldNumber")
+            String oldNumber,
+            @RequestParam(name = "newNumber")
+            String newNumber
+    )
+    {
+        return new ResponseEntity<>(autoparkService.updateAutoNumber(oldNumber, newNumber), HttpStatus.OK);
+    }
+
 }

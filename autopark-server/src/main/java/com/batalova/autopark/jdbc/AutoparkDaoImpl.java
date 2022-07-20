@@ -49,7 +49,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public int addPersonnel(PersonnelDto personnelDto) {
-        String request = "INSERT INTO personnel (firstName, lastName, fatherName) VALUES (?, ?, ?)";
+        String request = "INSERT INTO auto_personnel (first_name, last_name, father_name) VALUES (?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -91,7 +91,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
     }
 
     private int addJournal(JournalDto journalDto) {
-        String request = "INSERT INTO journal (autoId, routeId, timeIn, timeOut) VALUES (?, ?, ?, ?)";
+        String request = "INSERT INTO journal (auto_id, route_id, time_in, time_out) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -125,7 +125,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
     @Override
     public List<PersonnelDto> deletePersonnel(int personnelId) {
 
-        String request = "DELETE FROM personnel WHERE id = ?";
+        String request = "DELETE FROM auto_personnel WHERE id = ?";
 
         return jdbcTemplate.query(
                 request,
@@ -283,6 +283,17 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 DataClassRowMapper.newInstance(AutoDto.class),
                 color,
                 number);
+    }
+
+    @Override
+    public List<AutoDto> updateAutoNumber(String number, int id) {
+        String request = "UPDATE auto SET number = ? WHERE id = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(AutoDto.class),
+                number,
+                id);
     }
 
 }

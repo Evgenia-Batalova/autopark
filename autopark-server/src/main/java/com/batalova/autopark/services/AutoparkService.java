@@ -145,4 +145,15 @@ public class AutoparkService {
     public List<AutoDto> updateAutoColor(String color, String number) {
         return autoparkDao.updateAutoColor(color, number);
     }
+
+    public List<AutoDto> updateAutoNumber(String oldNumber, String newNumber){
+        List<AutoDto> oldAutoDto = findAutoByNumber(oldNumber);
+        if (oldAutoDto.size() >= 1) {
+            Integer id = oldAutoDto.get(0).getId().get();
+            return autoparkDao.updateAutoNumber(newNumber, id);
+        } else {
+            throw new RuntimeException("There is no auto with this number " + oldNumber);
+        }
+
+    }
 }

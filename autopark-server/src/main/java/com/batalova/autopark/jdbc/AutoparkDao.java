@@ -50,5 +50,7 @@ public interface AutoparkDao {
 
     List<AutoDto> updateAutoColor(String color, String number);
 
+    List<AutoDto> updateAutoNumber(String number, int id);
+
 
 }
