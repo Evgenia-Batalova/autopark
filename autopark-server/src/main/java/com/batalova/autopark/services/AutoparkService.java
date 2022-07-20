@@ -6,6 +6,7 @@ import com.batalova.autopark.dto.PersonnelDto;
 import com.batalova.autopark.dto.RouteDto;
 import com.batalova.autopark.jdbc.AutoparkDao;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -115,5 +116,27 @@ public class AutoparkService {
             throw new RuntimeException("Route with name " + routeName + " is absent");
         }
         return autoparkDao.startRoute(new JournalDto(autoId, routeId, Instant.now()));
+    }
+
+    public ResponseEntity<Void> finishRouteByAutoNumber(String autoNum){
+        List<JournalDto> autoNumList = autoparkDao.findUnfinishedRouteByAuto(autoNum);
+        List<AutoDto> autoDtoList = autoparkDao.findAutoByNumber(autoNum);
+        int autoId;
+        int routeId;
+        if (autoDtoList.size() >= 1) {
+            autoId = autoDtoList.get(0).getId().get();
+        } else {
+            throw new RuntimeException("Auto with number " + autoNum + " is absent");
+        }
+        List<JournalDto> journalDtoList = autoparkDao.findUnfinishedRouteByAutoId(autoId);
+        if (journalDtoList.size() >= 1) {
+            routeId = journalDtoList.get(0).getRouteId();
+        }
+        if (autoNumList.size() >= 1) {
+            finishRoute(routeId);
+        } else {
+            throw new RuntimeException("Route " + routeId + " already complete");
+        }
+        return ResponseEntity<>(HttpStatus.OK);
     }
 }
