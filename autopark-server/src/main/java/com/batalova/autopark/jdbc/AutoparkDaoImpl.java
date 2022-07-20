@@ -4,15 +4,15 @@ import com.batalova.autopark.dto.AutoDto;
 import com.batalova.autopark.dto.JournalDto;
 import com.batalova.autopark.dto.PersonnelDto;
 import com.batalova.autopark.dto.RouteDto;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.DataClassRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 public class AutoparkDaoImpl implements AutoparkDao {
@@ -25,22 +25,25 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public int addAuto(AutoDto autoDto) {
-        String request = "INSERT INTO auto (num, color, mark, personnel_id) VALUES (?, ?, ?, ?)";
+        PreparedStatementCreatorFactory preparedStatementCreatorFactory = new PreparedStatementCreatorFactory(
+                "INSERT INTO auto (num, color, mark, personnel_id) VALUES (?, ?, ?, ?)",
+                Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER
+        );
+
+        preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
+
+        PreparedStatementCreator preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
+                Arrays.asList(
+                        autoDto.getNumber(),
+                        autoDto.getColor(),
+                        autoDto.getMark(),
+                        autoDto.getPersonnelId()
+                )
+        );
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(request);
-                    ArgumentPreparedStatementSetter argumentPreparedStatementSetter =
-                            new ArgumentPreparedStatementSetter(new Object[]{
-                                    autoDto.getNumber(),
-                                    autoDto.getColor(),
-                                    autoDto.getMark(),
-                                    autoDto.getPersonnelId()
-                    });
-                    argumentPreparedStatementSetter.setValues(preparedStatement);
-                    return preparedStatement;
-                },
+                preparedStatementCreator,
                 keyHolder);
 
         return keyHolder.getKey().intValue();
@@ -50,23 +53,28 @@ public class AutoparkDaoImpl implements AutoparkDao {
     @Override
     public int addPersonnel(PersonnelDto personnelDto) {
         String request = "INSERT INTO auto_personnel (first_name, last_name, father_name) VALUES (?, ?, ?)";
+        PreparedStatementCreatorFactory preparedStatementCreatorFactory = new PreparedStatementCreatorFactory(
+                request,
+                Types.VARCHAR, Types.VARCHAR, Types.VARCHAR
+        );
+
+        preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
+
+        PreparedStatementCreator preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
+                Arrays.asList(
+                        personnelDto.getFirstName(),
+                        personnelDto.getLastName(),
+                        personnelDto.getFatherName()
+                )
+        );
+
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(request);
-                    ArgumentPreparedStatementSetter argumentPreparedStatementSetter =
-                            new ArgumentPreparedStatementSetter(new Object[]{
-                                    personnelDto.getFirstName(),
-                                    personnelDto.getLastName(),
-                                    personnelDto.getFatherName()
-                            });
-                    argumentPreparedStatementSetter.setValues(preparedStatement);
-                    return preparedStatement;
-                },
+                preparedStatementCreator,
                 keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return (int)keyHolder.getKeys().get("id");
 
     }
 
