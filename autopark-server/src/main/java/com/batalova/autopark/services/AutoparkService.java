@@ -156,4 +156,50 @@ public class AutoparkService {
         }
 
     }
+
+    public List<PersonnelDto> findPersonnelByFullName(String firstName, String lastName, String fatherName) {
+        return autoparkDao.findPersonnelByFullName(firstName,lastName, fatherName);
+    }
+
+    public List<PersonnelDto> updatePersonnelFirstName(String oldFirstName, String oldLastName, String oldFatherName, String newFirstName) {
+        List<PersonnelDto> oldFullName = findPersonnelByFullName(oldFirstName, oldLastName, oldFatherName);
+        List<PersonnelDto> newFullName = findPersonnelByFullName(newFirstName, oldLastName, oldFatherName);
+        if (oldFullName.size() >= 1) {
+            if (newFullName.size() < 1) {
+                return autoparkDao.updatePersonnelFirstName(newFirstName, oldLastName, oldFatherName);
+            } else {
+                throw new RuntimeException("Personnel with name " + newFirstName + oldLastName + oldFatherName + " is already exists");
+            }
+        } else {
+            throw new RuntimeException("There is no personnel with this name");
+        }
+    }
+
+    public List<PersonnelDto> updatePersonnelLastName(String oldFirstName, String oldLastName, String oldFatherName, String newLastName) {
+        List<PersonnelDto> oldFullName = findPersonnelByFullName(oldFirstName, oldLastName, oldFatherName);
+        List<PersonnelDto> newFullName = findPersonnelByFullName(oldFirstName, newLastName, oldFatherName);
+        if (oldFullName.size() >= 1) {
+            if (newFullName.size() < 1) {
+                return autoparkDao.updatePersonnelLastName(newLastName, oldFirstName, oldFatherName);
+            } else {
+                throw new RuntimeException("Personnel with name " + oldFirstName + newLastName + oldFatherName + " is already exists");
+            }
+        } else {
+            throw new RuntimeException("There is no personnel with this name");
+        }
+    }
+
+    public List<PersonnelDto> updatePersonnelFatherName(String oldFirstName, String oldLastName, String oldFatherName, String newFatherName) {
+        List<PersonnelDto> oldFullName = findPersonnelByFullName(oldFirstName, oldLastName, oldFatherName);
+        List<PersonnelDto> newFullName = findPersonnelByFullName(oldFirstName, oldLastName, newFatherName);
+        if (oldFullName.size() >= 1) {
+            if (newFullName.size() < 1) {
+                return autoparkDao.updatePersonnelFatherName(newFatherName, oldFirstName, oldLastName);
+            } else {
+                throw new RuntimeException("Personnel with name " + oldFirstName + oldLastName + newFatherName + " is already exists");
+            }
+        } else {
+            throw new RuntimeException("There is no personnel with this name");
+        }
+    }
 }

@@ -85,7 +85,7 @@ public class AutoparkController {
 
     @DeleteMapping(value = "/delete-personnel/{id}")
     public ResponseEntity<List<PersonnelDto>> deletePersonnel(
-            @PathVariable int id
+            @PathVariable(name = "id") int id
     )
     {
 
@@ -265,6 +265,66 @@ public class AutoparkController {
     )
     {
         return new ResponseEntity<>(autoparkService.updateAutoNumber(oldNumber, newNumber), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/find-personnel-by-full-name")
+    public ResponseEntity<List<PersonnelDto>> findPersonnelByFullName(
+            @RequestParam(name = "firstName")
+            String firstName,
+            @RequestParam(name = "lastName")
+            String lastName,
+            @RequestParam(name = "fatherName")
+            String fatherName
+    )
+    {
+        List<PersonnelDto> personnelByFullName = autoparkService.findPersonnelByFullName(firstName, lastName, fatherName);
+
+        return new ResponseEntity<>(personnelByFullName, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update-personnel-first-name")
+    public ResponseEntity<List<PersonnelDto>> updatePersonnelFirstName(
+            @RequestParam(name = "oldFirstName")
+            String oldFirstName,
+            @RequestParam(name = "oldLastName")
+            String oldLastName,
+            @RequestParam(name = "oldFatherName")
+            String oldFatherName,
+            @RequestParam(name = "newFirstName")
+            String newFirstName
+    )
+    {
+        return new ResponseEntity<>(autoparkService.updatePersonnelFirstName(oldFirstName, oldLastName, oldFatherName, newFirstName), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update-personnel-last-name")
+    public ResponseEntity<List<PersonnelDto>> updatePersonnelLastName(
+            @RequestParam(name = "oldFirstName")
+            String oldFirstName,
+            @RequestParam(name = "oldLastName")
+            String oldLastName,
+            @RequestParam(name = "oldFatherName")
+            String oldFatherName,
+            @RequestParam(name = "newLastName")
+            String newLastName
+    )
+    {
+        return new ResponseEntity<>(autoparkService.updatePersonnelLastName(oldFirstName, oldLastName, oldFatherName, newLastName), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update-personnel-father-name")
+    public ResponseEntity<List<PersonnelDto>> updatePersonnelFatherName(
+            @RequestParam(name = "oldFirstName")
+            String oldFirstName,
+            @RequestParam(name = "oldLastName")
+            String oldLastName,
+            @RequestParam(name = "oldFatherName")
+            String oldFatherName,
+            @RequestParam(name = "newFatherName")
+            String newFatherName
+    )
+    {
+        return new ResponseEntity<>(autoparkService.updatePersonnelFatherName(oldFirstName, oldLastName, oldFatherName, newFatherName), HttpStatus.OK);
     }
 
 }

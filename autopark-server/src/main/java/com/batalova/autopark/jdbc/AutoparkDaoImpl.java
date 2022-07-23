@@ -82,42 +82,54 @@ public class AutoparkDaoImpl implements AutoparkDao {
     public int addRoute(RouteDto routeDto) {
         String request = "INSERT INTO routes (name) VALUES (?)";
 
+        PreparedStatementCreatorFactory preparedStatementCreatorFactory = new PreparedStatementCreatorFactory(
+                request,
+                Types.VARCHAR
+        );
+
+        preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
+
+        PreparedStatementCreator preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
+                Arrays.asList(
+                        routeDto.getName()
+                )
+        );
+
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(request);
-                    ArgumentPreparedStatementSetter argumentPreparedStatementSetter =
-                            new ArgumentPreparedStatementSetter(new Object[]{
-                                    routeDto.getName()
-                            });
-                    argumentPreparedStatementSetter.setValues(preparedStatement);
-                    return preparedStatement;
-                },
+                preparedStatementCreator,
                 keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return (int)keyHolder.getKeys().get("id");
     }
 
     private int addJournal(JournalDto journalDto) {
         String request = "INSERT INTO journal (auto_id, route_id, time_in, time_out) VALUES (?, ?, ?, ?)";
 
+        PreparedStatementCreatorFactory preparedStatementCreatorFactory = new PreparedStatementCreatorFactory(
+                request,
+                Types.INTEGER, Types.INTEGER, Types.TIMESTAMP, Types.TIMESTAMP
+        );
+
+        preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
+
+        PreparedStatementCreator preparedStatementCreator = preparedStatementCreatorFactory.newPreparedStatementCreator(
+                Arrays.asList(
+                        journalDto.getAutoId(),
+                        journalDto.getRouteId(),
+                        journalDto.getTimeIn(),
+                        journalDto.getTimeOut()
+                )
+        );
+
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(request);
-                    ArgumentPreparedStatementSetter argumentPreparedStatementSetter =
-                            new ArgumentPreparedStatementSetter(new Object[]{
-                                    journalDto.getAutoId(),
-                                    journalDto.getRouteId(),
-                                    journalDto.getTimeIn(),
-                                    journalDto.getTimeOut()
-                            });
-                    argumentPreparedStatementSetter.setValues(preparedStatement);
-                    return preparedStatement;
-                },
+                preparedStatementCreator,
                 keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return (int)keyHolder.getKeys().get("id");
     }
 
     @Override
@@ -302,6 +314,54 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 DataClassRowMapper.newInstance(AutoDto.class),
                 number,
                 id);
+    }
+
+    @Override
+    public List<PersonnelDto> findPersonnelByFullName(String firstName, String lastName, String fatherName) {
+        String request = "SELECT * FROM auto_personnel WHERE first_name = ? AND last_name = ? AND father_name =?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                firstName,
+                lastName,
+                fatherName);
+    }
+
+    @Override
+    public List<PersonnelDto> updatePersonnelFirstName(String firstName, String lastName, String fatherName) {
+        String request = "UPDATE personnel SET first_name = ? WHERE last_name = ? AND father_name =?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                firstName,
+                lastName,
+                fatherName);
+    }
+
+    @Override
+    public List<PersonnelDto> updatePersonnelLastName(String lastName, String firstName, String fatherName) {
+        String request = "UPDATE personnel SET last_name = ? WHERE first_name = ? AND father_name =?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                lastName,
+                firstName,
+                fatherName);
+    }
+
+    @Override
+    public List<PersonnelDto> updatePersonnelFatherName(String firstName, String lastName, String fatherName) {
+        String request = "UPDATE personnel SET father_name = ? WHERE first_name = ? AND last_name = ?";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class),
+                fatherName,
+                firstName,
+                lastName);
     }
 
 }
