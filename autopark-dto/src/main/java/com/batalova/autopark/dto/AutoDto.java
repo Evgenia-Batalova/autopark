@@ -4,16 +4,16 @@ import java.util.Optional;
 
 public class AutoDto {
     private final Optional<Integer> id;
-    private final int personnelId;
+    private final int personnel_id;
     private final String color;
-    private final String number;
+    private final String num;
     private final String mark;
 
-    public AutoDto(Optional<Integer> id, Integer personnelId, String color, String number, String mark) {
+    public AutoDto(Optional<Integer> id, Integer personnel_id, String color, String num, String mark) {
         this.id = id;
-        this.personnelId = personnelId;
+        this.personnel_id = personnel_id;
         this.color = color;
-        this.number = number;
+        this.num = num;
         this.mark = mark;
     }
 
@@ -22,7 +22,7 @@ public class AutoDto {
     }
 
     public int getPersonnelId() {
-        return personnelId;
+        return personnel_id;
     }
 
     public String getColor() {
@@ -34,6 +34,6 @@ public class AutoDto {
     }
 
     public String getNumber() {
-        return number;
+        return num;
     }
 }

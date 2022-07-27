@@ -7,24 +7,20 @@ public class JournalDto {
 
     private final Optional<Integer> id;
 
-    private final int autoId;
+    private final int auto_id;
 
-    private final int routeId;
+    private final int route_id;
 
-    private final Instant timeIn;
+    private final Instant time_in;
 
-    private final Optional<Instant> timeOut;
+    private final Optional<Instant> time_out;
 
-    public JournalDto(Optional<Integer> id, Integer autoId, Integer routeId, Instant timeIn, Optional<Instant> timeOut) {
+    public JournalDto(Optional<Integer> id, Integer autoId, Integer route_id, Instant time_in, Optional<Instant> time_out) {
         this.id = id;
-        this.autoId = autoId;
-        this.routeId = routeId;
-        this.timeIn = timeIn;
-        this.timeOut = timeOut;
-    }
-
-    public JournalDto(Integer autoId, Integer routeId, Instant timeIn) {
-        this(Optional.empty(), autoId, routeId, timeIn, Optional.empty());
+        this.auto_id = autoId;
+        this.route_id = route_id;
+        this.time_in = time_in;
+        this.time_out = time_out;
     }
 
     public Optional<Integer> getId() {
@@ -32,18 +28,18 @@ public class JournalDto {
     }
 
     public int getAutoId() {
-        return autoId;
+        return auto_id;
     }
 
     public int getRouteId() {
-        return routeId;
+        return route_id;
     }
 
     public Instant getTimeIn() {
-        return timeIn;
+        return time_in;
     }
 
     public Optional<Instant> getTimeOut() {
-        return timeOut;
+        return time_out;
     }
 }

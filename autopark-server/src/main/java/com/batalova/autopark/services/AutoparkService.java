@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public class AutoparkService {
     private final AutoparkDao autoparkDao;
@@ -33,19 +34,29 @@ public class AutoparkService {
     }
 
     public int addPersonnel(PersonnelDto personnel) {
-        return autoparkDao.addPersonnel(personnel);
+        List<PersonnelDto> fullName = findPersonnelByFullName(personnel.getFirstName(), personnel.getLastName(), personnel.getFatherName());
+        if (fullName.size() < 1) {
+            return autoparkDao.addPersonnel(personnel);
+        } else {
+            throw new RuntimeException("Personnel with this name is already exists");
+        }
     }
 
     public int addRoute(RouteDto route) {
-        return autoparkDao.addRoute(route);
+        List<RouteDto> newRoute = findRouteByName(route.getName());
+        if (newRoute.size() < 1) {
+            return autoparkDao.addRoute(route);
+        } else {
+            throw new RuntimeException("Route with this name is already exists");
+        }
     }
 
     public List<AutoDto> deleteAuto(int autoId) {
         return autoparkDao.deleteAuto((autoId));
     }
 
-    public List<PersonnelDto> deletePersonnel(int personnelId) {
-        return autoparkDao.deletePersonnel(personnelId);
+    public void deletePersonnel(int personnelId) {
+        autoparkDao.deletePersonnel(personnelId);
     }
 
     public List<RouteDto> deleteRoute(int routeId) {
@@ -120,7 +131,7 @@ public class AutoparkService {
         } else {
             throw new RuntimeException("Route with name " + routeName + " is absent");
         }
-        return autoparkDao.startRoute(new JournalDto(autoId, routeId, Instant.now()));
+        return autoparkDao.startRoute(new JournalDto(Optional.empty(), autoId, routeId, Instant.now(), Optional.empty()));
     }
 
     public ResponseEntity<Void> finishRouteByAutoNumber(String autoNum) {
@@ -142,8 +153,8 @@ public class AutoparkService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public List<AutoDto> updateAutoColor(String color, String number) {
-        return autoparkDao.updateAutoColor(color, number);
+    public void updateAutoColor(String color, String num) {
+        autoparkDao.updateAutoColor(color, num);
     }
 
     public List<AutoDto> updateAutoNumber(String oldNumber, String newNumber){
@@ -201,5 +212,17 @@ public class AutoparkService {
         } else {
             throw new RuntimeException("There is no personnel with this name");
         }
+    }
+
+    public List<AutoDto> showAllAuto() {
+        return autoparkDao.showAllAuto();
+    }
+
+    public List<PersonnelDto> showAllPersonnel() {
+        return autoparkDao.showAllPersonnel();
+    }
+
+    public List<RouteDto> showAllRoute() {
+        return autoparkDao.showAllRoute();
     }
 }

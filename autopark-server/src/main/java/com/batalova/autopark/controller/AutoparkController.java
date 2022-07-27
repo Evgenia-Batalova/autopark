@@ -4,13 +4,11 @@ import com.batalova.autopark.dto.AutoDto;
 import com.batalova.autopark.dto.JournalDto;
 import com.batalova.autopark.dto.PersonnelDto;
 import com.batalova.autopark.dto.RouteDto;
-import com.batalova.autopark.jdbc.AutoparkDao;
 import com.batalova.autopark.services.AutoparkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,43 +21,43 @@ public class AutoparkController {
         this.autoparkService = autoparkService;
     }
 
-    @GetMapping(path = "/add-auto")
+    @PostMapping(path = "/add-auto")
     public ResponseEntity<Integer> addAuto(
-            @RequestParam(name = "person-id")
-            int personId,
+            @RequestParam(name = "personnel_id")
+            int personnel_id,
             @RequestParam(name = "color")
             String color,
-            @RequestParam(name = "number")
-            String number,
+            @RequestParam(name = "num")
+            String num,
             @RequestParam(name = "mark")
             String mark
     )
     {
-        AutoDto newAuto = new AutoDto(Optional.empty(), personId, color, number, mark);
+        AutoDto newAuto = new AutoDto(Optional.empty(), personnel_id, color, num, mark);
 
         int id = autoparkService.addAuto(newAuto);
 
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/add-personnel")
+    @PostMapping(path = "/add-personnel")
     public ResponseEntity<Integer> addPersonnel(
-            @RequestParam(name = "first-name")
-            String firstName,
-            @RequestParam(name = "last-name")
-            String lastName,
-            @RequestParam(name = "father-name")
-            String fatherName
+            @RequestParam(name = "first_name")
+            String first_name,
+            @RequestParam(name = "last_name")
+            String last_name,
+            @RequestParam(name = "father_name")
+            String father_name
     )
     {
-        PersonnelDto newPersonnel = new PersonnelDto(Optional.empty(), firstName, lastName, fatherName);
+        PersonnelDto newPersonnel = new PersonnelDto(Optional.empty(), first_name, last_name, father_name);
 
         int id = autoparkService.addPersonnel(newPersonnel);
 
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/add-route")
+    @PostMapping(path = "/add-route")
     public ResponseEntity<Integer> addRoute(
             @RequestParam(name = "name")
             String name
@@ -84,14 +82,13 @@ public class AutoparkController {
     }
 
     @DeleteMapping(value = "/delete-personnel/{id}")
-    public ResponseEntity<List<PersonnelDto>> deletePersonnel(
+    public ResponseEntity<Void> deletePersonnel(
             @PathVariable(name = "id") int id
     )
     {
+        autoparkService.deletePersonnel(id);
 
-        List<PersonnelDto> removedPersonnel = autoparkService.deletePersonnel(id);
-
-        return new ResponseEntity<>(removedPersonnel, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/delete-auto/{id}")
@@ -118,11 +115,11 @@ public class AutoparkController {
 
     @GetMapping(value = "/find-auto-by-number")
     public ResponseEntity<List<AutoDto>> findAutoByNumber(
-            @RequestParam(name = "number")
-            String number
+            @RequestParam(name = "num")
+            String num
     )
     {
-        List<AutoDto> autosByNumber = autoparkService.findAutoByNumber(number);
+        List<AutoDto> autosByNumber = autoparkService.findAutoByNumber(num);
 
         return new ResponseEntity<>(autosByNumber, HttpStatus.OK);
     }
@@ -140,191 +137,209 @@ public class AutoparkController {
 
     @GetMapping(value = "/find-personnel-by-first-name")
     public ResponseEntity<List<PersonnelDto>> findPersonnelByFirstName(
-            @RequestParam(name = "firstName")
-            String firstName
+            @RequestParam(name = "first_name")
+            String first_name
     )
     {
-        List<PersonnelDto> findFirstName = autoparkService.findPersonnelByFirstName(firstName);
+        List<PersonnelDto> findFirstName = autoparkService.findPersonnelByFirstName(first_name);
 
         return new ResponseEntity<>(findFirstName, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-personnel-by-last-name")
     public ResponseEntity<List<PersonnelDto>> findPersonnelByLastName(
-            @RequestParam(name = "lastName")
-            String lastName
+            @RequestParam(name = "last_name")
+            String last_name
     )
     {
-        List<PersonnelDto> personnelByLastName = autoparkService.findPersonnelByLastName(lastName);
+        List<PersonnelDto> personnelByLastName = autoparkService.findPersonnelByLastName(last_name);
 
         return new ResponseEntity<>(personnelByLastName, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-personnel-by-father-name")
     public ResponseEntity<List<PersonnelDto>> findPersonnelByFatherName(
-            @RequestParam(name = "fatherName")
-            String fatherName
+            @RequestParam(name = "father_name")
+            String father_name
     )
     {
-        List<PersonnelDto> personnelByFatherName = autoparkService.findPersonnelByFatherName(fatherName);
+        List<PersonnelDto> personnelByFatherName = autoparkService.findPersonnelByFatherName(father_name);
 
         return new ResponseEntity<>(personnelByFatherName, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-route-by-name")
     public ResponseEntity<List<RouteDto>> findRouteByName(
-            @RequestParam(name = "routeName")
-            String routeName
+            @RequestParam(name = "name")
+            String name
     )
     {
-        List<RouteDto> routeByName = autoparkService.findRouteByName(routeName);
+        List<RouteDto> routeByName = autoparkService.findRouteByName(name);
 
         return new ResponseEntity<>(routeByName, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-unfinished-route-by-auto")
     public ResponseEntity<List<JournalDto>> findUnfinishedRouteByAuto(
-            @RequestParam(name = "autoNumber")
-            String autoNumber
+            @RequestParam(name = "num")
+            String num
     )
     {
-        List<JournalDto> routeByAuto = autoparkService.findUnfinishedRouteByAuto(autoNumber);
+        List<JournalDto> routeByAuto = autoparkService.findUnfinishedRouteByAuto(num);
 
         return new ResponseEntity<>(routeByAuto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-unfinished-route-by-auto-id")
     public ResponseEntity<List<JournalDto>> findUnfinishedRouteByAutoId(
-            @RequestParam(name = "autoId")
-            int autoId
+            @RequestParam(name = "auto_id")
+            int auto_id
     )
     {
-        List<JournalDto> routeByAutoId = autoparkService.findUnfinishedRouteByAutoId(autoId);
+        List<JournalDto> routeByAutoId = autoparkService.findUnfinishedRouteByAutoId(auto_id);
 
         return new ResponseEntity<>(routeByAutoId, HttpStatus.OK);
     }
 
     @GetMapping(value = "/is-route-finished")
     public ResponseEntity<Boolean> isRouteFinished(
-            @RequestParam(name = "routeId")
-            int routeId
+            @RequestParam(name = "route_id")
+            int route_id
     )
     {
-        Boolean isFinished = autoparkService.isRouteFinished(routeId);
+        Boolean isFinished = autoparkService.isRouteFinished(route_id);
 
         return new ResponseEntity<>(isFinished, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/start-route")
-    public ResponseEntity<Integer> startRoute(
-            @RequestParam(name = "journalDto")
-            JournalDto journalDto
+    @GetMapping(value = "/finish-route-by-number")
+    public ResponseEntity<Void> finishRouteByNumber(
+            @RequestParam(name = "num")
+            String num
     )
     {
-        int start = autoparkService.startRoute(journalDto);
-
-        return new ResponseEntity<>(start, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/finish-route")
-    public ResponseEntity<Void> finishRoute()
-    {
+        autoparkService.finishRouteByAutoNumber(num);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/start-route-by-auto-number-and-route-name")
     public ResponseEntity<Integer> startRouteByAutoNumberAndRouteName(
-            @RequestParam(name = "autoNum")
-            String autoNum,
-            @RequestParam(name = "routeName")
-            String routeName
+            @RequestParam(name = "num")
+            String num,
+            @RequestParam(name = "name")
+            String name
     )
     {
-        int startByAutoNumberAndRouteName = autoparkService.startRouteByAutoNumberAndRouteName(autoNum, routeName);
+        int startByAutoNumberAndRouteName = autoparkService.startRouteByAutoNumberAndRouteName(num, name);
 
         return new ResponseEntity<>(startByAutoNumberAndRouteName, HttpStatus.OK);
     }
 
     @PostMapping(value = "/update-auto-color")
-    public ResponseEntity<List<AutoDto>> updateAutoColor(
+    public ResponseEntity<Void> updateAutoColor(
             @RequestParam(name = "color")
             String color,
-            @RequestParam(name = "number")
-            String number
+            @RequestParam(name = "num")
+            String num
     )
     {
-        return new ResponseEntity<>(autoparkService.updateAutoColor(color, number), HttpStatus.OK);
+        autoparkService.updateAutoColor(color, num);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/update-auto-number")
     public ResponseEntity<List<AutoDto>> updateAutoNumber(
-            @RequestParam(name = "oldNumber")
-            String oldNumber,
-            @RequestParam(name = "newNumber")
-            String newNumber
+            @RequestParam(name = "old_number")
+            String old_number,
+            @RequestParam(name = "new_number")
+            String new_number
     )
     {
-        return new ResponseEntity<>(autoparkService.updateAutoNumber(oldNumber, newNumber), HttpStatus.OK);
+        return new ResponseEntity<>(autoparkService.updateAutoNumber(old_number, new_number), HttpStatus.OK);
     }
 
     @GetMapping(value = "/find-personnel-by-full-name")
     public ResponseEntity<List<PersonnelDto>> findPersonnelByFullName(
-            @RequestParam(name = "firstName")
-            String firstName,
-            @RequestParam(name = "lastName")
-            String lastName,
-            @RequestParam(name = "fatherName")
-            String fatherName
+            @RequestParam(name = "first_name")
+            String first_name,
+            @RequestParam(name = "last_name")
+            String last_name,
+            @RequestParam(name = "father_name")
+            String father_name
     )
     {
-        List<PersonnelDto> personnelByFullName = autoparkService.findPersonnelByFullName(firstName, lastName, fatherName);
+        List<PersonnelDto> personnelByFullName = autoparkService.findPersonnelByFullName(first_name, last_name, father_name);
 
         return new ResponseEntity<>(personnelByFullName, HttpStatus.OK);
     }
 
     @PostMapping(value = "/update-personnel-first-name")
     public ResponseEntity<List<PersonnelDto>> updatePersonnelFirstName(
-            @RequestParam(name = "oldFirstName")
-            String oldFirstName,
-            @RequestParam(name = "oldLastName")
-            String oldLastName,
-            @RequestParam(name = "oldFatherName")
-            String oldFatherName,
-            @RequestParam(name = "newFirstName")
-            String newFirstName
+            @RequestParam(name = "old_first_name")
+            String old_first_name,
+            @RequestParam(name = "old_last_name")
+            String old_last_name,
+            @RequestParam(name = "old_father_name")
+            String old_father_name,
+            @RequestParam(name = "new_first_name")
+            String new_first_name
     )
     {
-        return new ResponseEntity<>(autoparkService.updatePersonnelFirstName(oldFirstName, oldLastName, oldFatherName, newFirstName), HttpStatus.OK);
+        return new ResponseEntity<>(autoparkService.updatePersonnelFirstName(old_first_name, old_last_name, old_father_name, new_first_name), HttpStatus.OK);
     }
 
     @PostMapping(value = "/update-personnel-last-name")
     public ResponseEntity<List<PersonnelDto>> updatePersonnelLastName(
-            @RequestParam(name = "oldFirstName")
-            String oldFirstName,
-            @RequestParam(name = "oldLastName")
-            String oldLastName,
-            @RequestParam(name = "oldFatherName")
-            String oldFatherName,
-            @RequestParam(name = "newLastName")
-            String newLastName
+            @RequestParam(name = "old_first_name")
+            String old_first_name,
+            @RequestParam(name = "old_last_name")
+            String old_last_name,
+            @RequestParam(name = "old_father_name")
+            String old_father_name,
+            @RequestParam(name = "new_last_name")
+            String new_last_name
     )
     {
-        return new ResponseEntity<>(autoparkService.updatePersonnelLastName(oldFirstName, oldLastName, oldFatherName, newLastName), HttpStatus.OK);
+        return new ResponseEntity<>(autoparkService.updatePersonnelLastName(old_first_name, old_last_name, old_father_name, new_last_name), HttpStatus.OK);
     }
 
     @PostMapping(value = "/update-personnel-father-name")
     public ResponseEntity<List<PersonnelDto>> updatePersonnelFatherName(
-            @RequestParam(name = "oldFirstName")
-            String oldFirstName,
-            @RequestParam(name = "oldLastName")
-            String oldLastName,
-            @RequestParam(name = "oldFatherName")
-            String oldFatherName,
-            @RequestParam(name = "newFatherName")
-            String newFatherName
+            @RequestParam(name = "old_first_name")
+            String old_first_name,
+            @RequestParam(name = "old_last_name")
+            String old_last_name,
+            @RequestParam(name = "old_father_name")
+            String old_father_name,
+            @RequestParam(name = "new_father_name")
+            String new_father_name
     )
     {
-        return new ResponseEntity<>(autoparkService.updatePersonnelFatherName(oldFirstName, oldLastName, oldFatherName, newFatherName), HttpStatus.OK);
+        return new ResponseEntity<>(autoparkService.updatePersonnelFatherName(old_first_name, old_last_name, old_father_name, new_father_name), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/show-all-auto")
+    public ResponseEntity<List<AutoDto>> showAllAuto()
+    {
+        List<AutoDto> autoDtoList = autoparkService.showAllAuto();
+
+        return new ResponseEntity<>(autoDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/show-all-personnel")
+    public ResponseEntity<List<PersonnelDto>> showAllPersonnel()
+    {
+        List<PersonnelDto> personnelDtoList = autoparkService.showAllPersonnel();
+
+        return new ResponseEntity<>(personnelDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/show-all-route")
+    public ResponseEntity<List<RouteDto>> showAllRoute()
+    {
+        List<RouteDto> routeDtoList = autoparkService.showAllRoute();
+
+        return new ResponseEntity<>(routeDtoList, HttpStatus.OK);
     }
 
 }

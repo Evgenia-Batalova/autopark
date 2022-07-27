@@ -7,6 +7,14 @@
     <groupId>com.batalova</groupId>
     <artifactId>autopark-dto</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-relational</artifactId>
+            <version>2.4.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <packaging>jar</packaging>
 

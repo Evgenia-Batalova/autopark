@@ -8,8 +8,7 @@ import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
 import java.util.Arrays;
@@ -46,7 +45,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 preparedStatementCreator,
                 keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return (int)keyHolder.getKeys().get("id");
     }
 
 
@@ -118,8 +117,8 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 Arrays.asList(
                         journalDto.getAutoId(),
                         journalDto.getRouteId(),
-                        journalDto.getTimeIn(),
-                        journalDto.getTimeOut()
+                        Timestamp.from(journalDto.getTimeIn()),
+                        journalDto.getTimeOut().orElseGet(() -> null)
                 )
         );
 
@@ -143,14 +142,14 @@ public class AutoparkDaoImpl implements AutoparkDao {
     }
 
     @Override
-    public List<PersonnelDto> deletePersonnel(int personnelId) {
+    public void deletePersonnel(int personnelId) {
 
         String request = "DELETE FROM auto_personnel WHERE id = ?";
+        Object[] arguments = new Object[] {personnelId};
 
-        return jdbcTemplate.query(
+        jdbcTemplate.update(
                 request,
-                DataClassRowMapper.newInstance(PersonnelDto.class),
-                personnelId);
+                arguments);
     }
 
     @Override
@@ -236,8 +235,8 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<JournalDto> findUnfinishedRouteByAuto(String autoNumber) {
-        String request = "SELECT journal.* FROM auto JOIN journal ON auto.id = journal.auto_id" +
-                "WHERE auto.number = ? AND journal.time_out IS NULL";
+        String request = "SELECT j.* FROM auto AS a JOIN journal AS j ON a.id = j.auto_id " +
+                "WHERE a.num = ? AND j.time_out IS NULL";
 
         return jdbcTemplate.query(
                 request,
@@ -278,7 +277,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
     public void finishRoute(int id, Instant timeOut) {
         if (!isRouteFinished(id)) {
             String request = "UPDATE journal SET time_out = ? WHERE id = ?";
-            jdbcTemplate.update(request, timeOut, id);
+            jdbcTemplate.update(request, Timestamp.from(timeOut), id);
         } else {
             throw new RuntimeException("Route with id: " + id + " is already exists!");
         }
@@ -295,12 +294,10 @@ public class AutoparkDaoImpl implements AutoparkDao {
     }
 
     @Override
-    public List<AutoDto> updateAutoColor(String color, String number) {
-        String request = "UPDATE auto SET color =? WHERE number = ?";
+    public void updateAutoColor(String color, String number) {
+        String request = "UPDATE auto SET color =? WHERE num = ?";
 
-        return jdbcTemplate.query(
-                request,
-                DataClassRowMapper.newInstance(AutoDto.class),
+        jdbcTemplate.update(request,
                 color,
                 number);
     }
@@ -330,7 +327,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<PersonnelDto> updatePersonnelFirstName(String firstName, String lastName, String fatherName) {
-        String request = "UPDATE personnel SET first_name = ? WHERE last_name = ? AND father_name =?";
+        String request = "UPDATE auto_personnel SET first_name = ? WHERE last_name = ? AND father_name =?";
 
         return jdbcTemplate.query(
                 request,
@@ -342,7 +339,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<PersonnelDto> updatePersonnelLastName(String lastName, String firstName, String fatherName) {
-        String request = "UPDATE personnel SET last_name = ? WHERE first_name = ? AND father_name =?";
+        String request = "UPDATE auto_personnel SET last_name = ? WHERE first_name = ? AND father_name =?";
 
         return jdbcTemplate.query(
                 request,
@@ -354,7 +351,7 @@ public class AutoparkDaoImpl implements AutoparkDao {
 
     @Override
     public List<PersonnelDto> updatePersonnelFatherName(String firstName, String lastName, String fatherName) {
-        String request = "UPDATE personnel SET father_name = ? WHERE first_name = ? AND last_name = ?";
+        String request = "UPDATE auto_personnel SET father_name = ? WHERE first_name = ? AND last_name = ?";
 
         return jdbcTemplate.query(
                 request,
@@ -362,6 +359,33 @@ public class AutoparkDaoImpl implements AutoparkDao {
                 fatherName,
                 firstName,
                 lastName);
+    }
+
+    @Override
+    public List<AutoDto> showAllAuto() {
+        String request = "SELECT * FROM auto";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(AutoDto.class));
+    }
+
+    @Override
+    public List<PersonnelDto> showAllPersonnel() {
+        String request = "SELECT * FROM auto_personnel";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(PersonnelDto.class));
+    }
+
+    @Override
+    public List<RouteDto> showAllRoute() {
+        String request = "SELECT * FROM routes";
+
+        return jdbcTemplate.query(
+                request,
+                DataClassRowMapper.newInstance(RouteDto.class));
     }
 
 }

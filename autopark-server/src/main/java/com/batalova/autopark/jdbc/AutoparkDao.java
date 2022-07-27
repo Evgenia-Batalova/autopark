@@ -19,7 +19,7 @@ public interface AutoparkDao {
 
     List<AutoDto> deleteAuto(int autoId);
 
-    List<PersonnelDto> deletePersonnel(int personnelId);
+    void deletePersonnel(int personnelId);
 
     List<RouteDto> deleteRoute(int routeId);
 
@@ -48,7 +48,7 @@ public interface AutoparkDao {
 
     List<RouteDto> findRouteByName(String routeName);
 
-    List<AutoDto> updateAutoColor(String color, String number);
+    void updateAutoColor(String color, String number);
 
     List<AutoDto> updateAutoNumber(String number, int id);
 
@@ -60,5 +60,9 @@ public interface AutoparkDao {
 
     List<PersonnelDto> updatePersonnelFatherName(String fatherName, String firstName, String lastName);
 
+    List<AutoDto> showAllAuto();
 
+    List<PersonnelDto> showAllPersonnel();
+
+    List<RouteDto> showAllRoute();
 }
